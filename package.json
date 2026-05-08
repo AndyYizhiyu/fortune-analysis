@@ -1,0 +1,35 @@
+{
+  "name": "fortune-analysis",
+  "version": "1.0.0",
+  "description": "个人运势分析",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndyYizhiyu/fortune-analysis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/AndyYizhiyu/fortune-analysis/issues"
+  },
+  "homepage": "https://github.com/AndyYizhiyu/fortune-analysis#readme",
+  "dependencies": {
+    "vue": "^3.5.34"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.6",
+    "@vue/test-utils": "^2.4.10",
+    "jsdom": "^29.1.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.11",
+    "vitest": "^4.1.5",
+    "vue-tsc": "^3.2.8"
+  }
+}

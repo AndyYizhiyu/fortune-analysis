@@ -5,10 +5,11 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.models import HistoryDetail, HistoryListItem, HistoryResponse, OptimizeRequest, OptimizeResponse
-from backend.app.services.prompt import build_optimized_prompt, calculate_zodiac
+from backend.app.services.llm import generate_optimized_prompt
+from backend.app.services.prompt import calculate_zodiac
 
 
-app = FastAPI(title="个性化命理提示词生成器")
+app = FastAPI(title="命理场景提示词生成器（仅代写下游提示词）")
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,7 +31,7 @@ def optimize(request: OptimizeRequest) -> OptimizeResponse:
     created_at = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M")
     response = OptimizeResponse(
         id=f"history_{next(_id_sequence):03d}",
-        optimizedPrompt=build_optimized_prompt(normalized_request),
+        optimizedPrompt=generate_optimized_prompt(normalized_request),
         createdAt=created_at,
     )
     _history.insert(0, HistoryDetail(**response.model_dump()))

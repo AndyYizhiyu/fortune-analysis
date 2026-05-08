@@ -53,7 +53,7 @@ class OptimizeRequest(BaseModel):
     birthTime: str | None = Field(default=None, max_length=30)
     birthPlace: BirthPlace
     gender: Gender
-    fiveElements: list[Element] = Field(min_length=1, max_length=5)
+    fiveElements: list[Element] = Field(default_factory=list, max_length=5)
     zodiac: Zodiac | None = None
     mbti: Mbti | None = None
     focusAreas: list[FocusArea] = Field(default_factory=list)

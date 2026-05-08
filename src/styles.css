@@ -41,6 +41,37 @@ select {
   display: grid;
   gap: 12px;
   margin-bottom: 28px;
+  position: relative;
+  padding-right: 64px;
+}
+
+.app-lead {
+  margin: 0;
+  max-width: 52em;
+  line-height: 1.65;
+  color: #57534e;
+}
+
+.dark .app-lead {
+  color: #94a3b8;
+}
+
+.app-footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #fed7aa;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #78716c;
+}
+
+.dark .app-footer {
+  border-top-color: #374151;
+  color: #94a3b8;
+}
+
+.app-footer p {
+  margin: 0;
 }
 
 h1 {
@@ -127,6 +158,8 @@ select {
 }
 
 .date-row,
+.location-row,
+.inline-row,
 .checkbox-group {
   display: grid;
   gap: 10px;
@@ -139,7 +172,17 @@ select {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.location-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.inline-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .date-row legend,
+.location-row legend,
+.inline-row legend,
 .checkbox-group legend {
   grid-column: 1 / -1;
   margin-bottom: 4px;
@@ -200,10 +243,42 @@ button {
   background: #ffedd5;
 }
 
+.theme-icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  color: #9a3412;
+  border: 1px solid #fdba74;
+  border-radius: 999px;
+  background: #ffedd5;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.header-corner-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 .dark .secondary-button {
   color: #cbd5e1;
   border-color: #4b5563;
   background: #111827;
+}
+
+.dark .theme-icon-button {
+  color: #facc15;
+  border-color: #4b5563;
+  background: #111827;
+}
+
+.round-checkbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
 }
 
 button:disabled {
@@ -254,7 +329,15 @@ button:disabled {
   color: #cbd5e1;
 }
 
-.history-item p,
+.history-preview {
+  margin: 0;
+  overflow: hidden;
+  max-width: 100%;
+  line-height: 1.6;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .history-detail pre {
   max-height: 180px;
   overflow: auto;
@@ -276,13 +359,36 @@ button:disabled {
 
 .result-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
 }
 
+.result-hint {
+  margin: 6px 0 0;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #78716c;
+  line-height: 1.5;
+}
+
+.dark .result-hint {
+  color: #94a3b8;
+}
+
 @media (max-width: 680px) {
-  .date-row {
+  .date-row,
+  .location-row,
+  .inline-row {
     grid-template-columns: 1fr;
+  }
+
+  .app-header {
+    padding-right: 0;
+  }
+
+  .header-corner-button {
+    position: static;
+    justify-self: end;
   }
 }

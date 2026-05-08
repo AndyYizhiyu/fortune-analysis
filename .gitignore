@@ -6,3 +6,4 @@ __pycache__/
 .vitest/
 .venv/
 venv/
+.idea/

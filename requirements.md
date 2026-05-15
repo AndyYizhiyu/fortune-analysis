@@ -320,5 +320,5 @@
 | 前端代码 | Vue.js + TailwindCSS |
 | 后端代码 | FastAPI 服务 |
 | API 文档 | Swagger UI |
-| 部署脚本 | 启动脚本、配置文件 |
+| 部署脚本 | `docker-compose.yml`、`Dockerfile`、`deployment/tencent/*`（腾讯云 CVM/轻量 + Docker） |
 

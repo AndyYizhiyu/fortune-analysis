@@ -1,4 +1,4 @@
-# 可选：任意支持 Docker 的 PaaS（Fly.io、Railway、部分 Render 配置等）
+# 腾讯云 CVM / 轻量应用服务器：后端 API 镜像（可与 docker-compose 联用）
 FROM python:3.12-slim
 
 WORKDIR /app

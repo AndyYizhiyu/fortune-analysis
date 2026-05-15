@@ -37,33 +37,56 @@ npm install
 npm run dev
 ```
 
-## 部署上线（Render API + Vercel 前端）
+## 部署上线（腾讯云）
 
-架构：**后端**部署在 [Render](https://render.com)（Python Web Service），**前端**部署在 [Vercel](https://vercel.com)（静态构建）。已用 MCP（Firecrawl）对照 [Render FastAPI 文档](https://render.com/docs/deploy-fastapi) 校验常见启动方式（`uvicorn` + `$PORT`）。
+推荐在 **腾讯云轻量应用服务器** 或 **云服务器 CVM**（Linux）上使用 **Docker Compose** 单机部署：同一域名 / 同一端口，**Nginx** 托管前端静态资源，并把 **`/api/*`** 反代到 **FastAPI**（与本地 `vite` 的 `/api` 代理一致，**无需**设置 `VITE_API_BASE_URL`）。
 
-### 1. 部署后端（Render）
+### 1. 准备云主机
 
-1. 登录 Render → **New** → **Blueprint**（或 **Web Service**）并连接本 GitHub 仓库。
-2. 若使用 Blueprint：选择含 `render.yaml` 的分支，创建后补全 **Environment** 中的密钥变量（`DEEPSEEK_API_KEY` 或 `KIMI_*`，以及 `FRONTEND_ORIGINS`）。
-3. **`FRONTEND_ORIGINS`**：填你的 Vercel 站点完整 origin，多个用英文逗号分隔，例如 `https://fortune-xxx.vercel.app,http://127.0.0.1:5173`。勿带路径。
-4. 部署完成后记下 **HTTPS 根 URL**（例如 `https://fortune-analysis-api.onrender.com`），供前端使用。
+1. 在控制台购买 **轻量应用服务器** 或 **CVM**（建议 Ubuntu 22.04），放行安全组 **TCP 80**（及若使用 HTTPS 则 **443**）。
+2. SSH 登录主机，安装 [Docker Engine](https://docs.docker.com/engine/install/ubuntu/) 与 [Docker Compose 插件](https://docs.docker.com/compose/install/linux/)。
 
-手动创建 Web Service 时：**Build** `pip install -r requirements.txt`，**Start** `uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT`。仓库根目录已提供 `runtime.txt` 指定 Python 3.12。
+### 2. 拉代码与配置
 
-可选：使用根目录 `Dockerfile` 在支持 Docker 的平台部署，启动命令需读取环境变量 `PORT`。
+```bash
+git clone https://github.com/AndyYizhiyu/fortune-analysis.git
+cd fortune-analysis
+cp .env.example .env
+# 编辑 .env：至少填写 DEEPSEEK_API_KEY（或 Kimi 相关变量）
+```
 
-### 2. 部署前端（Vercel）
+**必须**设置 **`FRONTEND_ORIGINS`** 为浏览器实际访问的 origin（与地址栏协议 + 域名 + 端口一致），多个用英文逗号分隔，例如：
 
-1. 登录 Vercel → **Add New Project** → 导入同一 GitHub 仓库。
-2. **Framework Preset** 选 Vite；根目录默认仓库根；`vercel.json` 已配置 SPA 回写与构建输出 `dist`。
-3. 在 **Settings → Environment Variables** 中为 **Production**（及如需 Preview）添加：
-   - **`VITE_API_BASE_URL`** = 上一步 Render 的 API 根 URL（**无**末尾 `/`），例如 `https://fortune-analysis-api.onrender.com`。
-4. 保存后重新 **Deploy**。前端请求会直连该地址的 `/optimize`、`/history` 等（与本地 `/api` 代理不同，无需路径前缀）。
+```env
+FRONTEND_ORIGINS=https://你的备案域名,http://公网IP
+```
 
-### 3. 自检
+仅本机试跑 Compose 时可写：`http://127.0.0.1,http://localhost`。
 
-- 浏览器打开 Vercel 域名，打开开发者工具 **Network**，提交表单应看到对 Render 域名的 `POST .../optimize` 且状态 200。
-- 若 CORS 报错：检查 Render 上 `FRONTEND_ORIGINS` 是否与浏览器地址栏 origin **完全一致**（含 `https`）。
+### 3. 启动
+
+```bash
+docker compose up -d --build
+```
+
+默认 **HTTP 80** 对外（可通过环境变量 `HTTP_PORT` 修改映射，例如 `HTTP_PORT=8080 docker compose up -d`）。
+
+### 4. HTTPS（可选）
+
+- 使用 **腾讯云 SSL 证书** + **负载均衡 CLB** 在 443 终结 TLS，回源到主机 80；或  
+- 在主机上自行配置 **Nginx 443 + 证书**（如 Certbot、宝塔等），并将 `FRONTEND_ORIGINS` 增加 `https://你的域名`。
+
+### 5. 与「仅腾讯云」相关的仓库文件
+
+| 路径 | 说明 |
+|------|------|
+| `docker-compose.yml` | `api`（`Dockerfile`）+ `web`（`deployment/tencent/Dockerfile.web`） |
+| `deployment/tencent/nginx.conf` | 静态站点 + `/api/` 反代 |
+| `deployment/tencent/Dockerfile.web` | Node 构建 Vue，再拷贝到 Nginx |
+
+### 6. 自检
+
+浏览器打开 `http://你的IP` 或域名，开发者工具 **Network** 中提交表单应出现 **`/api/optimize`** 且状态为 **200**。若 CORS 报错，请核对 **`FRONTEND_ORIGINS`** 是否与地址栏 **完全一致**（含 `http`/`https` 与端口）。
 
 ## 测试
 

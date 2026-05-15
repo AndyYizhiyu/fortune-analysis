@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timezone, timedelta
 from itertools import count
 
@@ -11,9 +12,18 @@ from backend.app.services.prompt import calculate_zodiac
 
 app = FastAPI(title="命理场景提示词生成器（仅代写下游提示词）")
 
+
+def _cors_origins() -> list[str]:
+    raw = os.environ.get(
+        "FRONTEND_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173",
+    )
+    return [o.strip() for o in raw.split(",") if o.strip()]
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

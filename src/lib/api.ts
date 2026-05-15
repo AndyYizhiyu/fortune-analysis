@@ -32,8 +32,26 @@ export interface HistoryDetail {
   optimizedPrompt: string;
 }
 
+/** 生产环境在构建时设置 VITE_API_BASE_URL（后端根 URL，无末尾斜杠）；本地留空走 Vite /api 代理。 */
+function apiBase(): string {
+  const raw = import.meta.env.VITE_API_BASE_URL;
+  if (typeof raw !== "string" || !raw.trim()) {
+    return "";
+  }
+  return raw.trim().replace(/\/$/, "");
+}
+
+function apiUrl(path: string): string {
+  const p = path.startsWith("/") ? path : `/${path}`;
+  const base = apiBase();
+  if (!base) {
+    return `/api${p}`;
+  }
+  return `${base}${p}`;
+}
+
 export async function optimizePrompt(payload: OptimizePayload): Promise<OptimizeResponse> {
-  const response = await fetch("/api/optimize", {
+  const response = await fetch(apiUrl("/optimize"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -47,7 +65,7 @@ export async function optimizePrompt(payload: OptimizePayload): Promise<Optimize
 }
 
 export async function fetchHistory(): Promise<HistoryListItem[]> {
-  const response = await fetch("/api/history");
+  const response = await fetch(apiUrl("/history"));
 
   if (!response.ok) {
     throw new Error("历史记录加载失败");
@@ -58,7 +76,7 @@ export async function fetchHistory(): Promise<HistoryListItem[]> {
 }
 
 export async function fetchHistoryDetail(id: string): Promise<HistoryDetail> {
-  const response = await fetch(`/api/history/${id}`);
+  const response = await fetch(apiUrl(`/history/${id}`));
 
   if (!response.ok) {
     throw new Error("历史记录详情加载失败");

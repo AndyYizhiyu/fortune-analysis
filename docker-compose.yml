@@ -1,5 +1,4 @@
-# 腾讯云：单台云服务器上一键起前后端（Nginx 静态 + 反代 FastAPI）
-# 文档见 README「部署上线（腾讯云）」
+# 腾讯云轻量应用服务器（Lighthouse）或 CVM：单机 Docker Compose（Nginx + FastAPI）
 
 services:
   api:
